@@ -6,6 +6,12 @@
 <title>Golf Majors Pool</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Majors Pool">
+<meta name="theme-color" content="#0d1210">
+<meta name="description" content="Golf Majors Pool Dashboard">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
@@ -542,6 +548,9 @@ function rMoney(){
     h+='</tbody></table></div></div>';}
   ct.innerHTML=h;
 }
+
+/* ===== SERVICE WORKER ===== */
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{populateMe();rSeason();});
