@@ -122,6 +122,33 @@ td,th{padding:.32rem .28rem;font-size:.68rem}.cd{margin:0 .45rem .55rem;padding:
 .sc .v{font-size:1.1rem}.nav button{padding:.55rem .65rem;font-size:.7rem}.cc{height:190px}
 .ev-grid{grid-template-columns:repeat(2,1fr)}.ig{grid-template-columns:1fr 1fr}.aw-grid{grid-template-columns:1fr 1fr}
 .sr{grid-template-columns:repeat(2,1fr);gap:.35rem}.me-bar{flex-wrap:wrap}}
+/* Live tab */
+.api-bar{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;padding:.6rem .8rem;background:var(--bca);border:1px solid var(--br);border-radius:7px;margin-bottom:.5rem}
+.api-bar input{flex:1;min-width:160px;font-family:var(--fm);font-size:.72rem;padding:.35rem .5rem;background:var(--bc);color:var(--tp);border:1px solid var(--br);border-radius:4px;outline:0}
+.api-bar input:focus{border-color:var(--gn)}
+.api-bar .ab{font-family:var(--fb);font-size:.68rem;padding:.35rem .8rem;background:var(--gn);color:var(--tb);border:none;border-radius:4px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;font-weight:500;transition:background .2s;white-space:nowrap}
+.api-bar .ab:hover{background:var(--gl)}.api-bar .ab.sec{background:var(--bc);color:var(--ts);border:1px solid var(--br)}.api-bar .ab.sec:hover{border-color:var(--gn);color:var(--tb)}
+.dgs{font-size:.65rem;font-family:var(--fm)}.dgs.ok{color:var(--gl)}.dgs.err{color:var(--rd)}.dgs.ld{color:var(--go)}
+.mjr-sched{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.45rem;margin-bottom:.3rem}
+.mjr-card{background:var(--bc);border:1px solid var(--br);border-radius:7px;padding:.55rem;text-align:center;transition:all .2s}
+.mjr-card.done{border-color:var(--gn);opacity:.65}.mjr-card.live{border-color:var(--go);background:rgba(201,162,39,.06);animation:pulse 2s infinite}
+.mjr-card.next{border-color:var(--gl)}
+.mjr-card .mn{font-family:var(--fd);font-size:.88rem;color:var(--tb);font-weight:600}
+.mjr-card .md{font-size:.6rem;color:var(--ts);margin-top:.1rem}
+.mjr-card .ms{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem;padding:.12rem .35rem;border-radius:3px;display:inline-block}
+.ms.s-d{color:var(--gl);background:rgba(82,183,136,.1)}.ms.s-l{color:var(--go);background:rgba(201,162,39,.15)}.ms.s-n{color:var(--gl);background:rgba(82,183,136,.08)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,0)}50%{box-shadow:0 0 12px 2px rgba(201,162,39,.15)}}
+.lb-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
+.lb-t{font-family:var(--fd);font-size:1.15rem;color:var(--tb);font-weight:600}
+.lb-m{font-size:.62rem;color:var(--ts);font-family:var(--fm)}
+.lb-r{font-size:.65rem;color:var(--go);cursor:pointer;font-family:var(--fb);background:none;border:1px solid var(--go);border-radius:4px;padding:.2rem .5rem;transition:all .2s}.lb-r:hover{background:rgba(201,162,39,.1)}
+.pi-ta{width:100%;height:100px;font-family:var(--fm);font-size:.68rem;padding:.5rem;background:var(--bc);color:var(--tp);border:1px solid var(--br);border-radius:5px;resize:vertical;outline:0;margin-bottom:.35rem}.pi-ta:focus{border-color:var(--gn)}
+.pi-row{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}.pi-cnt{font-size:.62rem;color:var(--ts);flex:1}
+.er-g{display:inline-block;padding:.12rem .35rem;margin:.08rem;font-size:.62rem;font-family:var(--fm);background:var(--bca);border:1px solid var(--br);border-radius:3px}
+.er-g.cut{opacity:.5;text-decoration:line-through}.er-g.t10{border-color:var(--gl);color:var(--gl)}.er-g.t5{border-color:var(--go);color:var(--go)}
+.ar-tog{font-size:.62rem;color:var(--ts);cursor:pointer;display:flex;align-items:center;gap:.3rem}.ar-tog input{accent-color:var(--go)}
+@media(max-width:768px){.mjr-sched{grid-template-columns:repeat(3,1fr);gap:.3rem}}
+@media(max-width:480px){.mjr-sched{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -138,6 +165,7 @@ td,th{padding:.32rem .28rem;font-size:.68rem}.cd{margin:0 .45rem .55rem;padding:
 <button class="active" onclick="go('season')">Season</button>
 <button onclick="go('events')">Events</button>
 <button onclick="go('insights')">Insights</button>
+<button onclick="go('live')">Live</button>
 <button onclick="go('career')">Career</button>
 <button onclick="go('money')">Money</button>
 </nav>
@@ -170,6 +198,43 @@ td,th{padding:.32rem .28rem;font-size:.68rem}.cd{margin:0 .45rem .55rem;padding:
 <div class="ctrl" style="padding:0 0 .4rem"><select id="dd-sel" onchange="rDD()"><option value="">Select a player...</option></select></div>
 <div id="dd-body"></div></div>
 <div class="cd"><h3>Pool Growth</h3><div class="cc"><canvas id="g-chart"></canvas></div></div>
+</section>
+<section id="live" class="pn2">
+<div class="cd">
+<h3>⛳ DataGolf Connection</h3>
+<div class="api-bar">
+<input type="password" id="dg-key" placeholder="DataGolf API key...">
+<button class="ab" onclick="dgConn()">Connect</button>
+<span id="dg-st" class="dgs"></span>
+</div>
+<div style="font-size:.58rem;color:var(--td);margin-top:.25rem">Get a key at <a href="https://datagolf.com/api-access" target="_blank" style="color:var(--go)">datagolf.com/api-access</a> &middot; <a href="https://sm.app.splashsports.com/shared_includes_v5/poolSettings/view_details.cfm?t=2592378&authT=2592378" target="_blank" style="color:var(--go)">Open Pool on Splash Sports ↗</a></div>
+</div>
+<div class="cd"><h3>Majors Schedule</h3>
+<div id="mjr-sch" class="mjr-sched"></div></div>
+<div class="cd">
+<div class="lb-hdr">
+<span class="lb-t" id="lb-tt">Live Leaderboard</span>
+<div style="display:flex;gap:.5rem;align-items:center">
+<label class="ar-tog"><input type="checkbox" id="ar-cb" onchange="togAR()">Auto-refresh (5m)</label>
+<span class="lb-m" id="lb-mt"></span>
+<button class="lb-r" id="lb-rb" onclick="dgLive()" style="display:none">↻ Refresh</button>
+</div></div>
+<div id="lb-bd" style="text-align:center;color:var(--ts);padding:.8rem;font-size:.8rem">Connect to DataGolf to see live scores</div>
+</div>
+<div class="cd">
+<h3>Pool Entries <span style="font-size:.72rem;color:var(--ts)">(Import from Splash Sports)</span></h3>
+<textarea id="pi-ta" class="pi-ta" placeholder="Paste pool entries — one per line:&#10;EntryName, Golfer1, Golfer2, Golfer3, ...&#10;Tab-separated also works (copy table from Splash Sports)."></textarea>
+<div class="pi-row">
+<button class="ab" onclick="piImport()">Import</button>
+<button class="ab sec" onclick="piClear()">Clear All</button>
+<span class="pi-cnt" id="pi-cnt"></span>
+</div>
+<div id="pi-bd"></div>
+</div>
+<div class="cd" id="pl-wrap" style="display:none">
+<h3>Live Pool Standings</h3>
+<div id="pl-bd"></div>
+</div>
 </section>
 <section id="career" class="pn2">
 <div class="ctrl"><input type="text" id="scc" placeholder="Search players..." oninput="rCareer()"></div>
@@ -296,9 +361,9 @@ function yrCard(y,s){
 function go(t){S.tab=t;document.querySelectorAll('.pn2').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById(t)?.classList.add('active');
-  ['season','events','insights','career','money'].forEach((x,i)=>{if(x===t)document.querySelectorAll('.nav button')[i]?.classList.add('active');});
+  ['season','events','insights','live','career','money'].forEach((x,i)=>{if(x===t)document.querySelectorAll('.nav button')[i]?.classList.add('active');});
   if(t==='season')rSeason();else if(t==='events')rEvents();else if(t==='insights')rInsights();
-  else if(t==='career')rCareer();else if(t==='money')rMoney();}
+  else if(t==='live')rLive();else if(t==='career')rCareer();else if(t==='money')rMoney();}
 function chgYr(){S.yr=document.getElementById('yr').value;S.sort={c:'rank',a:true};updateMeBadge();rSeason();}
 
 /* ===== SEASON TAB ===== */
@@ -525,7 +590,6 @@ function rMoney(){
   for(const y of yrs){const ents=e4y(y);totalCollected+=ents.length*150;
     for(const e of ents)if(e.winnings>0){totalPaid+=e.winnings;uniqueWinners.add(e.person);}}
   let h=`<div class="cd"><h3>Pool Economics (All-Time)</h3><div class="pe">
-    <div class="pe-item"><div class="pv">$${totalCollected.toLocaleString()}</div><div class="pl">Total Collected</div></div>
     <div class="pe-item"><div class="pv">$${Math.round(totalPaid).toLocaleString()}</div><div class="pl">Total Paid Out</div></div>
     <div class="pe-item"><div class="pv">${uniqueWinners.size}</div><div class="pl">Unique Winners</div></div>
     <div class="pe-item"><div class="pv">${yrs.length}</div><div class="pl">Seasons</div></div></div></div>`;
@@ -548,6 +612,131 @@ function rMoney(){
     h+='</tbody></table></div></div>';}
   ct.innerHTML=h;
 }
+
+/* ===== LIVE TAB ===== */
+let DG={key:null,ok:false,lb:null,pl:null,ar:null,pool:[]};
+const PROXY='https://corsproxy.io/?';
+async function dgF(ep,ps={}){
+  const u='https://feeds.datagolf.com/'+ep+'?'+new URLSearchParams({...ps,file_format:'json',key:DG.key});
+  try{const r=await fetch(u);if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
+  catch(e){try{const r2=await fetch(PROXY+encodeURIComponent(u));if(!r2.ok)throw e;return await r2.json();}catch(e2){throw e;}}}
+async function dgConn(){
+  const inp=document.getElementById('dg-key'),st=document.getElementById('dg-st'),k=inp.value.trim();
+  if(!k){st.className='dgs err';st.textContent='Enter API key';return;}
+  DG.key=k;localStorage.setItem('dg_key',k);st.className='dgs ld';st.textContent='Connecting...';
+  try{const pl=await dgF('get-player-list');DG.pl=pl;DG.ok=true;
+    st.className='dgs ok';st.textContent='✓ Connected ('+pl.length+' players)';
+    document.getElementById('lb-rb').style.display='';dgLive();}
+  catch(e){DG.ok=false;st.className='dgs err';st.textContent='✗ '+e.message;}}
+async function dgLive(){
+  if(!DG.ok)return;const mt=document.getElementById('lb-mt');mt.textContent='Loading...';
+  try{const d=await dgF('preds/in-play',{tour:'pga'});DG.lb=d;rLB(d);mt.textContent='Updated '+new Date().toLocaleTimeString();}
+  catch(e){try{const d=await dgF('preds/live-tournament-stats',{stats:'sg_total,sg_putt,sg_app,sg_ott',round:'event_avg',display:'value'});
+    DG.lb=d;rLBS(d);mt.textContent='Updated '+new Date().toLocaleTimeString();}
+    catch(e2){document.getElementById('lb-bd').innerHTML='<div style="color:var(--rd);text-align:center;padding:.5rem;font-size:.75rem">No active tournament or error: '+e.message+'</div>';
+      mt.textContent='Error';}}}
+function togAR(){const cb=document.getElementById('ar-cb');
+  if(cb.checked){DG.ar=setInterval(dgLive,300000);}else{clearInterval(DG.ar);DG.ar=null;}}
+function fmN(n){if(!n)return'-';const p=n.split(', ');return p.length===2?p[1]+' '+p[0]:n;}
+function normN(n){if(!n)return'';let s=n.trim();const p=s.split(', ');if(p.length===2)s=p[1]+' '+p[0];return s.toLowerCase().replace(/[^a-z]/g,'');}
+function inPool(dn){if(!DG.pool.length)return false;const n=normN(dn);return DG.pool.some(e=>e.g.some(g=>normN(g)===n));}
+function rLB(d){
+  const bd=document.getElementById('lb-bd');
+  if(!d||!d.data||!d.data.length){bd.innerHTML='<div style="text-align:center;color:var(--ts);padding:.8rem;font-size:.8rem">No live data — tournament may not be in progress</div>';return;}
+  const info=d.info||{};document.getElementById('lb-tt').textContent=info.event_name||'Live Leaderboard';
+  const all=[...d.data].sort((a,b)=>{
+    if((a.current_pos==='CUT')!==(b.current_pos==='CUT'))return a.current_pos==='CUT'?1:-1;
+    return(parseInt(a.current_pos)||999)-(parseInt(b.current_pos)||999);});
+  const show=all.slice(0,70);
+  let h='<div class="tw" style="margin:0"><table><thead><tr><th>Pos</th><th>Player</th><th>Score</th><th>Today</th><th>Thru</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th></tr></thead><tbody>';
+  for(const p of show){
+    const pos=p.current_pos||'-',nm=p.player_name||'-';
+    const sc=p.current_score!=null?(p.current_score>0?'+'+p.current_score:p.current_score===0?'E':p.current_score):'-';
+    const td2=p.today!=null?(p.today>0?'+'+p.today:p.today===0?'E':p.today):'-';
+    const thru=p.thru||p.end_hole||'-';
+    const scc=p.current_score<0?'sg':p.current_score>0?'sb':'';
+    const tdc=p.today<0?'sg':p.today>0?'sb':'';
+    const cut=p.make_cut===0?' style="opacity:.45"':'';
+    const pn=parseInt(pos)||999,rc=pn===1?'r1':pn<=3?'r2':pn<=5?'r3':'';
+    const ip=inPool(nm);
+    h+=`<tr${cut}${ip?' class="me"':''}>
+      <td class="rc ${rc}">${pos}</td>
+      <td class="nc">${fmN(nm)}${ip?' <span style="color:var(--go);font-size:.5rem">●</span>':''}</td>
+      <td class="${scc}" style="font-weight:600">${sc}</td><td class="${tdc}">${td2}</td><td>${thru}</td>
+      <td>${p.R1||p.r1||'-'}</td><td>${p.R2||p.r2||'-'}</td><td>${p.R3||p.r3||'-'}</td><td>${p.R4||p.r4||'-'}</td></tr>`;}
+  h+='</tbody></table></div>';
+  if(all.length>70)h+=`<div style="text-align:center;font-size:.6rem;color:var(--td);padding:.25rem">Showing 70 of ${all.length}</div>`;
+  bd.innerHTML=h;if(DG.pool.length)calcPL();}
+function rLBS(d){
+  const bd=document.getElementById('lb-bd');
+  if(!d||!d.live_stats||!d.live_stats.length){bd.innerHTML='<div style="text-align:center;color:var(--ts);padding:.8rem;font-size:.8rem">No live stats data</div>';return;}
+  document.getElementById('lb-tt').textContent=d.info?.course_name||'Live Tournament';
+  const all=[...d.live_stats].sort((a,b)=>(parseInt(a.position)||999)-(parseInt(b.position)||999)).slice(0,70);
+  let h='<div class="tw" style="margin:0"><table><thead><tr><th>Pos</th><th>Player</th><th>Total</th><th>Thru</th><th>SG Total</th><th>SG Putt</th></tr></thead><tbody>';
+  for(const p of all){const pos=p.position||'-',nm=p.player_name||'-';
+    const tot=p.total!=null?(p.total>0?'+'+p.total:p.total===0?'E':p.total):'-';
+    const sc=p.total<0?'sg':p.total>0?'sb':'';const cut=pos==='CUT'?' style="opacity:.45"':'';const ip=inPool(nm);
+    h+=`<tr${cut}${ip?' class="me"':''}><td class="rc">${pos}</td><td class="nc">${fmN(nm)}${ip?' <span style="color:var(--go);font-size:.5rem">●</span>':''}</td>
+      <td class="${sc}" style="font-weight:600">${tot}</td><td>${p.thru||'-'}</td>
+      <td>${p.sg_total!=null?p.sg_total.toFixed(2):'-'}</td><td>${p.sg_putt!=null?p.sg_putt.toFixed(2):'-'}</td></tr>`;}
+  h+='</tbody></table></div>';bd.innerHTML=h;}
+/* Pool entries */
+function piImport(){
+  const txt=document.getElementById('pi-ta').value.trim();if(!txt)return;
+  const lines=txt.split('\n').filter(l=>l.trim());const entries=[];
+  for(const line of lines){let p=line.split('\t');if(p.length<2)p=line.split(',');if(p.length<2)continue;
+    const nm=p[0].trim(),gs=p.slice(1).map(g=>g.trim()).filter(g=>g);
+    if(nm&&gs.length)entries.push({n:nm,g:gs});}
+  DG.pool=entries;localStorage.setItem('pool26',JSON.stringify(entries));
+  document.getElementById('pi-cnt').textContent=entries.length+' entries imported ('+entries.reduce((s,e)=>s+e.g.length,0)+' golfer slots)';
+  rPE();if(DG.lb)calcPL();}
+function piClear(){DG.pool=[];localStorage.removeItem('pool26');
+  document.getElementById('pi-cnt').textContent='Cleared';document.getElementById('pi-bd').innerHTML='';
+  document.getElementById('pl-wrap').style.display='none';}
+function rPE(){
+  const bd=document.getElementById('pi-bd');if(!DG.pool.length){bd.innerHTML='';return;}
+  let h='<div class="tw" style="margin:.5rem 0 0"><table><thead><tr><th>#</th><th>Entry</th><th>Roster</th></tr></thead><tbody>';
+  DG.pool.forEach((e,i)=>{h+=`<tr><td class="rc">${i+1}</td><td class="nc">${e.n}</td>
+    <td>${e.g.map(g=>'<span class="er-g">'+g+'</span>').join(' ')}</td></tr>`;});
+  h+='</tbody></table></div>';bd.innerHTML=h;}
+/* Live pool standings */
+function calcPL(){
+  if(!DG.pool.length||!DG.lb)return;
+  document.getElementById('pl-wrap').style.display='';
+  const sm={};const raw=DG.lb.data||DG.lb.live_stats||[];
+  for(const p of raw){const n=normN(p.player_name);sm[n]={s:p.current_score??p.total??null,pos:p.current_pos??p.position??'-',thru:p.thru||p.end_hole||'-',cut:p.make_cut===0};}
+  const st=DG.pool.map(entry=>{let tot=0,m=0;const gd=[];
+    for(const g of entry.g){const n=normN(g),d=sm[n];
+      if(d&&d.s!=null){tot+=d.s;m++;gd.push({n:g,...d});}else gd.push({n:g,s:null,pos:'N/A',thru:'-',cut:false});}
+    return{n:entry.n,tot,m,cnt:entry.g.length,gd};}).sort((a,b)=>a.tot-b.tot);
+  let h='<div class="tw" style="margin:0"><table><thead><tr><th>Rk</th><th>Entry</th><th>Pool Score</th><th>Golfers</th><th>Matched</th></tr></thead><tbody>';
+  st.forEach((s,i)=>{const sc=s.tot<0?'sg':s.tot>0?'sb':'';
+    const sv=s.m>0?(s.tot>0?'+'+s.tot:s.tot===0?'E':s.tot):'-';
+    const me=loadMe()&&s.n.toLowerCase().includes(loadMe().toLowerCase())?'me':'';
+    h+=`<tr class="${me}"><td class="rc ${i<3?'r'+(i+1):''}">${i+1}</td><td class="nc">${s.n}</td>
+      <td class="${sc}" style="font-weight:600">${sv}</td>
+      <td style="font-size:.6rem">${s.gd.map(g=>{const gc=g.s!=null?(g.s<0?'t10':''):'';const cs=g.cut?'cut':'';return'<span class="er-g '+gc+' '+cs+'">'+g.n+(g.s!=null?' ('+(g.s>0?'+':'')+g.s+')':'')+'</span>';}).join(' ')}</td>
+      <td>${s.m}/${s.cnt}</td></tr>`;});
+  h+='</tbody></table></div>';document.getElementById('pl-bd').innerHTML=h;}
+/* Majors schedule */
+function rMjrSch(){
+  const el=document.getElementById('mjr-sch');if(!el)return;
+  const mj=[{n:'The Players',d:'Mar 13 \'25',s:'done'},{n:'Masters',d:'Apr 10 \'25',s:'done'},
+    {n:'PGA Champ.',d:'May 15 \'25',s:'done'},{n:'U.S. Open',d:'Jun 12 \'25',s:'done'},
+    {n:'The Open',d:'Jul 17 \'25',s:'done'},{n:'Masters \'26',d:'Apr 2026',s:'next'},
+    {n:'PGA Champ. \'26',d:'May 2026',s:'next'},{n:'U.S. Open \'26',d:'Jun 2026',s:'next'},
+    {n:'The Open \'26',d:'Jul 2026',s:'next'}];
+  el.innerHTML=mj.map(m=>{const c=m.s==='done'?'done':m.s==='live'?'live':'next';
+    const sl=m.s==='done'?'Complete':m.s==='live'?'LIVE':'Upcoming';
+    const sc=m.s==='done'?'s-d':m.s==='live'?'s-l':'s-n';
+    return`<div class="mjr-card ${c}"><div class="mn">${m.n}</div><div class="md">${m.d}</div><div class="ms ${sc}">${sl}</div></div>`;}).join('');}
+/* Live tab init */
+function rLive(){
+  const sk=localStorage.getItem('dg_key');
+  if(sk){document.getElementById('dg-key').value=sk;if(!DG.ok)dgConn();}
+  const sp=localStorage.getItem('pool26');
+  if(sp){try{DG.pool=JSON.parse(sp);document.getElementById('pi-cnt').textContent=DG.pool.length+' entries loaded';rPE();}catch(e){}}
+  rMjrSch();}
 
 /* ===== SERVICE WORKER ===== */
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
