@@ -147,7 +147,18 @@ td,th{padding:.32rem .28rem;font-size:.68rem}.cd{margin:0 .45rem .55rem;padding:
 .er-g{display:inline-block;padding:.12rem .35rem;margin:.08rem;font-size:.62rem;font-family:var(--fm);background:var(--bca);border:1px solid var(--br);border-radius:3px}
 .er-g.cut{opacity:.5;text-decoration:line-through}.er-g.t10{border-color:var(--gl);color:var(--gl)}.er-g.t5{border-color:var(--go);color:var(--go)}
 .ar-tog{font-size:.62rem;color:var(--ts);cursor:pointer;display:flex;align-items:center;gap:.3rem}.ar-tog input{accent-color:var(--go)}
-@media(max-width:768px){.mjr-sched{grid-template-columns:repeat(3,1fr);gap:.3rem}}
+.er-g.counted{border-color:var(--gl);color:var(--gl)}.er-g.dropped{opacity:.4;text-decoration:line-through}
+.pi-rev-row{display:flex;align-items:center;gap:.3rem;padding:.2rem 0;border-bottom:1px solid var(--br);font-size:.65rem}
+.pi-rev-ok{color:var(--gl)}.pi-rev-fuzzy{color:var(--go)}.pi-rev-fail{color:var(--rd)}
+.ev-status{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.4rem}
+.ev-chip{font-size:.58rem;padding:.15rem .4rem;border-radius:3px;font-family:var(--fm);border:1px solid var(--br);background:var(--bc)}
+.ev-chip.has{border-color:var(--gl);color:var(--gl)}.ev-chip.empty{color:var(--td)}
+.ntf-tog{display:flex;align-items:center;gap:.3rem;padding:.2rem .3rem;cursor:pointer}
+.ntf-tog input{accent-color:var(--go);width:14px;height:14px}
+.ntf-tog .nt-icon{width:16px;text-align:center}.ntf-tog .nt-lbl{flex:1;color:var(--tp)}
+.ntf-item{display:flex;gap:.3rem;padding:.2rem 0;border-bottom:1px solid var(--br);font-size:.6rem}
+.ntf-item .ni-time{color:var(--td);font-family:var(--fm);white-space:nowrap;min-width:50px}.ntf-item .ni-msg{color:var(--tp);flex:1}
+@media(max-width:768px){.mjr-sched{grid-template-columns:repeat(3,1fr);gap:.3rem}#ntf-toggles{grid-template-columns:1fr}}
 @media(max-width:480px){.mjr-sched{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -209,7 +220,7 @@ td,th{padding:.32rem .28rem;font-size:.68rem}.cd{margin:0 .45rem .55rem;padding:
 </div>
 <div style="font-size:.58rem;color:var(--td);margin-top:.25rem">Get a key at <a href="https://datagolf.com/api-access" target="_blank" style="color:var(--go)">datagolf.com/api-access</a> &middot; <a href="https://sm.app.splashsports.com/shared_includes_v5/poolSettings/view_details.cfm?t=2592378&authT=2592378" target="_blank" style="color:var(--go)">Open Pool on Splash Sports ↗</a></div>
 </div>
-<div class="cd"><h3>Majors Schedule</h3>
+<div class="cd"><h3>2026 Majors</h3>
 <div id="mjr-sch" class="mjr-sched"></div></div>
 <div class="cd">
 <div class="lb-hdr">
@@ -222,18 +233,34 @@ td,th{padding:.32rem .28rem;font-size:.68rem}.cd{margin:0 .45rem .55rem;padding:
 <div id="lb-bd" style="text-align:center;color:var(--ts);padding:.8rem;font-size:.8rem">Connect to DataGolf to see live scores</div>
 </div>
 <div class="cd">
-<h3>Pool Entries <span style="font-size:.72rem;color:var(--ts)">(Import from Splash Sports)</span></h3>
-<textarea id="pi-ta" class="pi-ta" placeholder="Paste pool entries — one per line:&#10;EntryName, Golfer1, Golfer2, Golfer3, ...&#10;Tab-separated also works (copy table from Splash Sports)."></textarea>
+<h3>Pool Entries <span style="font-size:.72rem;color:var(--ts)">(Best 4 of 6 &middot; Salary Cap)</span></h3>
+<div style="font-size:.6rem;color:var(--td);margin-bottom:.4rem">Paste entries from Splash Sports — one per line: <code style="color:var(--go)">EntryName, Golfer1, Golfer2, ... Golfer6</code></div>
+<div class="pi-row" style="margin-bottom:.35rem">
+<select id="pi-ev" class="ctrl" style="padding:.3rem .5rem;font-size:.7rem;min-width:120px">
+<option value="players">The Players</option><option value="masters">Masters</option>
+<option value="pga">PGA Championship</option><option value="uso">U.S. Open</option><option value="open">The Open</option>
+</select>
+<span style="font-size:.6rem;color:var(--ts)">Import for event:</span>
+</div>
+<textarea id="pi-ta" class="pi-ta" placeholder="Paste from Splash Sports (tab or comma separated):&#10;Team Alpha, Scottie Scheffler, Rory McIlroy, Xander Schauffele, Jon Rahm, Ludvig Aberg, Collin Morikawa&#10;Team Beta, ..."></textarea>
 <div class="pi-row">
 <button class="ab" onclick="piImport()">Import</button>
 <button class="ab sec" onclick="piClear()">Clear All</button>
 <span class="pi-cnt" id="pi-cnt"></span>
 </div>
+<div id="pi-review" style="display:none"></div>
+<div id="pi-status" style="margin-top:.4rem"></div>
 <div id="pi-bd"></div>
 </div>
 <div class="cd" id="pl-wrap" style="display:none">
-<h3>Live Pool Standings</h3>
+<h3>Live Pool Standings <span style="font-size:.72rem;color:var(--ts)">(Best 4 of 6)</span></h3>
 <div id="pl-bd"></div>
+</div>
+<div class="cd" id="ntf-wrap">
+<h3>Notifications <span style="font-size:.72rem;color:var(--ts)">(when tab is open)</span></h3>
+<div id="ntf-perm" style="margin-bottom:.4rem"></div>
+<div id="ntf-toggles" style="display:grid;grid-template-columns:1fr 1fr;gap:.2rem;font-size:.62rem"></div>
+<div id="ntf-hist" style="margin-top:.5rem;max-height:150px;overflow-y:auto"></div>
 </div>
 </section>
 <section id="career" class="pn2">
@@ -614,8 +641,21 @@ function rMoney(){
 }
 
 /* ===== LIVE TAB ===== */
-let DG={key:null,ok:false,lb:null,pl:null,ar:null,pool:[]};
 const PROXY='https://corsproxy.io/?';
+const BEST_OF=4,ROSTER_SZ=6;
+const EV_NAMES={players:'The Players',masters:'Masters',pga:'PGA Champ.',uso:'U.S. Open',open:'The Open'};
+const EV_DATES={players:'Mar 2026',masters:'Apr 10 2026',pga:'May 15 2026',uso:'Jun 15 2026',open:'Jul 16 2026'};
+const EV_DETECT={players:/players/i,masters:/masters/i,pga:/pga champ/i,uso:/u\.?s\.?\s*open/i,open:/^the open|british open|open champ/i};
+
+/* State */
+let DG={key:null,ok:false,lb:null,pl:null,plLookup:null,ar:null,prev:null};
+let POOL={entries:[],completedEvents:[],activeEvent:null,nameCache:{}};
+const NTF={enabled:false,types:{lead:true,inMoney:true,outMoney:true,eagle:true,top5:true,missedCut:true,roundEnd:true,payoutChange:true,leadChange:true,bigMove:true},history:[]};
+const NTF_META={lead:{icon:'🏆',lbl:'Your entry takes the lead'},inMoney:{icon:'📈',lbl:'Move into the money'},outMoney:{icon:'📉',lbl:'Drop out of the money'},
+  eagle:{icon:'🦅',lbl:'Your golfer eagles'},top5:{icon:'🔥',lbl:'Golfer enters top 5'},missedCut:{icon:'✂️',lbl:'Golfer misses cut'},
+  roundEnd:{icon:'🏌️',lbl:'Round finished'},payoutChange:{icon:'💰',lbl:'Payout changes'},leadChange:{icon:'⚡',lbl:'Pool lead changes'},bigMove:{icon:'📊',lbl:'Big rank move (5+)'}};
+
+/* === API === */
 async function dgF(ep,ps={}){
   const u='https://feeds.datagolf.com/'+ep+'?'+new URLSearchParams({...ps,file_format:'json',key:DG.key});
   try{const r=await fetch(u);if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
@@ -624,22 +664,55 @@ async function dgConn(){
   const inp=document.getElementById('dg-key'),st=document.getElementById('dg-st'),k=inp.value.trim();
   if(!k){st.className='dgs err';st.textContent='Enter API key';return;}
   DG.key=k;localStorage.setItem('dg_key',k);st.className='dgs ld';st.textContent='Connecting...';
-  try{const pl=await dgF('get-player-list');DG.pl=pl;DG.ok=true;
+  try{const pl=await dgF('get-player-list');DG.pl=pl;DG.plLookup=buildLookup(pl);DG.ok=true;
     st.className='dgs ok';st.textContent='✓ Connected ('+pl.length+' players)';
     document.getElementById('lb-rb').style.display='';dgLive();}
   catch(e){DG.ok=false;st.className='dgs err';st.textContent='✗ '+e.message;}}
 async function dgLive(){
   if(!DG.ok)return;const mt=document.getElementById('lb-mt');mt.textContent='Loading...';
-  try{const d=await dgF('preds/in-play',{tour:'pga'});DG.lb=d;rLB(d);mt.textContent='Updated '+new Date().toLocaleTimeString();}
+  const prevSnap=DG.lb?captureSnap():null;
+  try{const d=await dgF('preds/in-play',{tour:'pga'});DG.lb=d;rLB(d);mt.textContent='Updated '+new Date().toLocaleTimeString();
+    detectEvent(d.info?.event_name);if(hasPool())calcPL();if(prevSnap)diffAndNotify(prevSnap);}
   catch(e){try{const d=await dgF('preds/live-tournament-stats',{stats:'sg_total,sg_putt,sg_app,sg_ott',round:'event_avg',display:'value'});
-    DG.lb=d;rLBS(d);mt.textContent='Updated '+new Date().toLocaleTimeString();}
-    catch(e2){document.getElementById('lb-bd').innerHTML='<div style="color:var(--rd);text-align:center;padding:.5rem;font-size:.75rem">No active tournament or error: '+e.message+'</div>';
-      mt.textContent='Error';}}}
+    DG.lb=d;rLBS(d);mt.textContent='Updated '+new Date().toLocaleTimeString();if(hasPool())calcPL();}
+    catch(e2){document.getElementById('lb-bd').innerHTML='<div style="color:var(--rd);text-align:center;padding:.5rem;font-size:.75rem">No active tournament: '+e.message+'</div>';mt.textContent='Error';}}}
 function togAR(){const cb=document.getElementById('ar-cb');
   if(cb.checked){DG.ar=setInterval(dgLive,300000);}else{clearInterval(DG.ar);DG.ar=null;}}
+
+/* === NAME MATCHING === */
 function fmN(n){if(!n)return'-';const p=n.split(', ');return p.length===2?p[1]+' '+p[0]:n;}
 function normN(n){if(!n)return'';let s=n.trim();const p=s.split(', ');if(p.length===2)s=p[1]+' '+p[0];return s.toLowerCase().replace(/[^a-z]/g,'');}
-function inPool(dn){if(!DG.pool.length)return false;const n=normN(dn);return DG.pool.some(e=>e.g.some(g=>normN(g)===n));}
+function levenshtein(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;
+  const d=Array.from({length:m+1},(_,i)=>i);
+  for(let j=1;j<=n;j++){let prev=d[0];d[0]=j;
+    for(let i=1;i<=m;i++){const t=d[i];d[i]=a[i-1]===b[j-1]?prev:1+Math.min(prev,d[i],d[i-1]);prev=t;}}
+  return d[m];}
+function buildLookup(players){
+  const lk={};for(const p of players){
+    const cn=p.player_name,norm1=normN(cn),disp=fmN(cn),norm2=normN(disp);
+    const v={dgId:p.dg_id,canonical:cn,display:disp};
+    lk[norm1]=v;lk[norm2]=v;
+    const last=cn.split(',')[0].trim().toLowerCase().replace(/[^a-z]/g,'');
+    if(!lk[last])lk[last]=v;}
+  return lk;}
+function matchGolfer(input){
+  if(!DG.plLookup)return null;
+  // Check cache first
+  const cached=POOL.nameCache[normN(input)];if(cached)return{canonical:cached,confidence:1};
+  const norm=normN(input);
+  // Exact match
+  if(DG.plLookup[norm])return{...DG.plLookup[norm],confidence:1};
+  // Fuzzy match
+  let best=null,bestDist=Infinity;
+  for(const[key,val]of Object.entries(DG.plLookup)){
+    const d=levenshtein(norm,key);const thresh=Math.floor(Math.max(norm.length,key.length)*.3);
+    if(d<bestDist&&d<=thresh){bestDist=d;best={...val,confidence:1-d/Math.max(norm.length,key.length)};}}
+  return best;}
+function inPool(dn){if(!POOL.entries.length)return false;const n=normN(dn);const ev=POOL.activeEvent||'masters';
+  return POOL.entries.some(e=>(e.rosters[ev]||[]).some(g=>normN(g)===n));}
+function hasPool(){return POOL.entries.length>0&&POOL.entries.some(e=>Object.values(e.rosters).some(r=>r&&r.length));}
+
+/* === LIVE LEADERBOARD === */
 function rLB(d){
   const bd=document.getElementById('lb-bd');
   if(!d||!d.data||!d.data.length){bd.innerHTML='<div style="text-align:center;color:var(--ts);padding:.8rem;font-size:.8rem">No live data — tournament may not be in progress</div>';return;}
@@ -657,7 +730,7 @@ function rLB(d){
     const scc=p.current_score<0?'sg':p.current_score>0?'sb':'';
     const tdc=p.today<0?'sg':p.today>0?'sb':'';
     const cut=p.make_cut===0?' style="opacity:.45"':'';
-    const pn=parseInt(pos)||999,rc=pn===1?'r1':pn<=3?'r2':pn<=5?'r3':'';
+    const pn2=parseInt(pos)||999,rc=pn2===1?'r1':pn2<=3?'r2':pn2<=5?'r3':'';
     const ip=inPool(nm);
     h+=`<tr${cut}${ip?' class="me"':''}>
       <td class="rc ${rc}">${pos}</td>
@@ -666,7 +739,7 @@ function rLB(d){
       <td>${p.R1||p.r1||'-'}</td><td>${p.R2||p.r2||'-'}</td><td>${p.R3||p.r3||'-'}</td><td>${p.R4||p.r4||'-'}</td></tr>`;}
   h+='</tbody></table></div>';
   if(all.length>70)h+=`<div style="text-align:center;font-size:.6rem;color:var(--td);padding:.25rem">Showing 70 of ${all.length}</div>`;
-  bd.innerHTML=h;if(DG.pool.length)calcPL();}
+  bd.innerHTML=h;}
 function rLBS(d){
   const bd=document.getElementById('lb-bd');
   if(!d||!d.live_stats||!d.live_stats.length){bd.innerHTML='<div style="text-align:center;color:var(--ts);padding:.8rem;font-size:.8rem">No live stats data</div>';return;}
@@ -680,63 +753,207 @@ function rLBS(d){
       <td class="${sc}" style="font-weight:600">${tot}</td><td>${p.thru||'-'}</td>
       <td>${p.sg_total!=null?p.sg_total.toFixed(2):'-'}</td><td>${p.sg_putt!=null?p.sg_putt.toFixed(2):'-'}</td></tr>`;}
   h+='</tbody></table></div>';bd.innerHTML=h;}
-/* Pool entries */
+
+/* === POOL IMPORT (per-event, fuzzy matching) === */
 function piImport(){
   const txt=document.getElementById('pi-ta').value.trim();if(!txt)return;
-  const lines=txt.split('\n').filter(l=>l.trim());const entries=[];
-  for(const line of lines){let p=line.split('\t');if(p.length<2)p=line.split(',');if(p.length<2)continue;
-    const nm=p[0].trim(),gs=p.slice(1).map(g=>g.trim()).filter(g=>g);
-    if(nm&&gs.length)entries.push({n:nm,g:gs});}
-  DG.pool=entries;localStorage.setItem('pool26',JSON.stringify(entries));
-  document.getElementById('pi-cnt').textContent=entries.length+' entries imported ('+entries.reduce((s,e)=>s+e.g.length,0)+' golfer slots)';
-  rPE();if(DG.lb)calcPL();}
-function piClear(){DG.pool=[];localStorage.removeItem('pool26');
+  const ev=document.getElementById('pi-ev').value;
+  const lines=txt.split('\n').filter(l=>l.trim());const parsed=[];
+  // Skip header row if it looks like one
+  const start=(lines[0]&&/^(entry|team|name|#)/i.test(lines[0].split(/[\t,]/)[0].trim()))?1:0;
+  for(let i=start;i<lines.length;i++){
+    const line=lines[i];let p=line.split('\t');if(p.length<2)p=line.split(',');if(p.length<2)continue;
+    const nm=p[0].trim(),gs=p.slice(1).map(g=>g.trim()).filter(g=>g&&!/^\d+$/.test(g)&&!/^\$/.test(g));
+    if(nm&&gs.length)parsed.push({name:nm,golfers:gs});}
+  if(!parsed.length){document.getElementById('pi-cnt').textContent='No entries found — check format';return;}
+  // Match golfer names
+  let matched=0,fuzzy=0,failed=0;const reviewHTML=[];
+  const confirmed=[];
+  for(const entry of parsed){
+    const resolvedGolfers=[];
+    for(const g of entry.golfers){
+      const m=matchGolfer(g);
+      if(m&&m.confidence>=.9){resolvedGolfers.push(m.display||fmN(m.canonical));matched++;
+        reviewHTML.push(`<div class="pi-rev-row"><span class="pi-rev-ok">✓</span><span>${g}</span><span style="color:var(--td)">→</span><span style="color:var(--gl)">${m.display||fmN(m.canonical)}</span></div>`);}
+      else if(m&&m.confidence>=.6){resolvedGolfers.push(m.display||fmN(m.canonical));fuzzy++;
+        POOL.nameCache[normN(g)]=m.canonical;
+        reviewHTML.push(`<div class="pi-rev-row"><span class="pi-rev-fuzzy">~</span><span>${g}</span><span style="color:var(--td)">→</span><span style="color:var(--go)">${m.display||fmN(m.canonical)} (${Math.round(m.confidence*100)}%)</span></div>`);}
+      else{resolvedGolfers.push(g);failed++;
+        reviewHTML.push(`<div class="pi-rev-row"><span class="pi-rev-fail">✗</span><span style="color:var(--rd)">${g}</span><span style="color:var(--td)">— no match</span></div>`);}}
+    confirmed.push({name:entry.name,golfers:resolvedGolfers});}
+  // Show review
+  if(DG.plLookup&&(fuzzy||failed)){
+    document.getElementById('pi-review').style.display='';
+    document.getElementById('pi-review').innerHTML=`<div style="font-size:.62rem;color:var(--ts);margin:.3rem 0">Name matching: <span class="pi-rev-ok">${matched} exact</span> · <span class="pi-rev-fuzzy">${fuzzy} fuzzy</span> · <span class="pi-rev-fail">${failed} unmatched</span></div>`+reviewHTML.slice(0,40).join('');
+  }else{document.getElementById('pi-review').style.display='none';}
+  // Merge into POOL
+  for(const c of confirmed){
+    let existing=POOL.entries.find(e=>e.name===c.name);
+    if(!existing){existing={name:c.name,rosters:{players:[],masters:[],pga:[],uso:[],open:[]},completed:{players:null,masters:null,pga:null,uso:null,open:null}};POOL.entries.push(existing);}
+    existing.rosters[ev]=c.golfers.slice(0,ROSTER_SZ);}
+  savePool();
+  document.getElementById('pi-cnt').textContent=`${confirmed.length} entries → ${EV_NAMES[ev]} (${matched+fuzzy} matched, ${failed} unmatched)`;
+  rPE();rEvStatus();if(DG.lb)calcPL();}
+function piClear(){POOL={entries:[],completedEvents:[],activeEvent:null,nameCache:{}};
+  localStorage.removeItem('pool_2026');
   document.getElementById('pi-cnt').textContent='Cleared';document.getElementById('pi-bd').innerHTML='';
-  document.getElementById('pl-wrap').style.display='none';}
+  document.getElementById('pi-review').style.display='none';
+  document.getElementById('pl-wrap').style.display='none';rEvStatus();}
+function savePool(){localStorage.setItem('pool_2026',JSON.stringify(POOL));}
+function loadPool(){const s=localStorage.getItem('pool_2026');
+  if(s){try{Object.assign(POOL,JSON.parse(s));}catch(e){}}
+  // Migrate old format
+  const old=localStorage.getItem('pool26');
+  if(old&&!POOL.entries.length){try{const arr=JSON.parse(old);
+    POOL.entries=arr.map(e=>({name:e.n,rosters:{players:e.g||[],masters:[],pga:[],uso:[],open:[]},completed:{players:null,masters:null,pga:null,uso:null,open:null}}));
+    savePool();localStorage.removeItem('pool26');}catch(e){}}}
+
+/* === POOL DISPLAY === */
 function rPE(){
-  const bd=document.getElementById('pi-bd');if(!DG.pool.length){bd.innerHTML='';return;}
-  let h='<div class="tw" style="margin:.5rem 0 0"><table><thead><tr><th>#</th><th>Entry</th><th>Roster</th></tr></thead><tbody>';
-  DG.pool.forEach((e,i)=>{h+=`<tr><td class="rc">${i+1}</td><td class="nc">${e.n}</td>
-    <td>${e.g.map(g=>'<span class="er-g">'+g+'</span>').join(' ')}</td></tr>`;});
+  const bd=document.getElementById('pi-bd');if(!POOL.entries.length){bd.innerHTML='';return;}
+  const ev=POOL.activeEvent||document.getElementById('pi-ev')?.value||'masters';
+  const withRoster=POOL.entries.filter(e=>e.rosters[ev]&&e.rosters[ev].length>0);
+  if(!withRoster.length){bd.innerHTML=`<div style="text-align:center;color:var(--ts);padding:.5rem;font-size:.72rem">${POOL.entries.length} entries loaded — no rosters for ${EV_NAMES[ev]||ev} yet</div>`;return;}
+  let h=`<div style="font-size:.6rem;color:var(--td);margin:.3rem 0">Showing rosters for ${EV_NAMES[ev]||ev} (${withRoster.length} entries)</div>`;
+  h+='<div class="tw" style="margin:.3rem 0 0"><table><thead><tr><th>#</th><th>Entry</th><th>Roster (6 golfers)</th></tr></thead><tbody>';
+  withRoster.forEach((e,i)=>{h+=`<tr><td class="rc">${i+1}</td><td class="nc">${e.name}</td>
+    <td>${(e.rosters[ev]||[]).map(g=>'<span class="er-g">'+g+'</span>').join(' ')}</td></tr>`;});
   h+='</tbody></table></div>';bd.innerHTML=h;}
-/* Live pool standings */
+function rEvStatus(){
+  const el=document.getElementById('pi-status');if(!el)return;
+  if(!POOL.entries.length){el.innerHTML='';return;}
+  const evs=EK;
+  el.innerHTML='<div class="ev-status">'+evs.map(k=>{
+    const ct=POOL.entries.filter(e=>e.rosters[k]&&e.rosters[k].length>0).length;
+    const cls=ct>0?'has':'empty';
+    return`<span class="ev-chip ${cls}">${EV_NAMES[k]||k}: ${ct}</span>`;}).join('')+'</div>';}
+
+/* === BEST 4 OF 6 SCORING === */
+function calcEntryScore(entry,evKey,scoreMap){
+  const roster=entry.rosters[evKey];if(!roster||!roster.length)return null;
+  const gs=roster.map(g=>{const n=normN(g),d=scoreMap[n];
+    return{name:g,score:d?.s??null,pos:d?.pos??'-',thru:d?.thru??'-',cut:d?.cut??false,counted:false};});
+  const withS=gs.filter(g=>g.score!==null).sort((a,b)=>a.score-b.score);
+  const noS=gs.filter(g=>g.score===null);
+  const counted=withS.slice(0,BEST_OF);counted.forEach(g=>g.counted=true);
+  const dropped=withS.slice(BEST_OF);
+  const total=counted.reduce((s,g)=>s+g.score,0);
+  return{total,countedN:counted.length,golfers:[...counted,...dropped,...noS]};}
 function calcPL(){
-  if(!DG.pool.length||!DG.lb)return;
+  if(!hasPool()||!DG.lb)return;
   document.getElementById('pl-wrap').style.display='';
-  const sm={};const raw=DG.lb.data||DG.lb.live_stats||[];
-  for(const p of raw){const n=normN(p.player_name);sm[n]={s:p.current_score??p.total??null,pos:p.current_pos??p.position??'-',thru:p.thru||p.end_hole||'-',cut:p.make_cut===0};}
-  const st=DG.pool.map(entry=>{let tot=0,m=0;const gd=[];
-    for(const g of entry.g){const n=normN(g),d=sm[n];
-      if(d&&d.s!=null){tot+=d.s;m++;gd.push({n:g,...d});}else gd.push({n:g,s:null,pos:'N/A',thru:'-',cut:false});}
-    return{n:entry.n,tot,m,cnt:entry.g.length,gd};}).sort((a,b)=>a.tot-b.tot);
-  let h='<div class="tw" style="margin:0"><table><thead><tr><th>Rk</th><th>Entry</th><th>Pool Score</th><th>Golfers</th><th>Matched</th></tr></thead><tbody>';
-  st.forEach((s,i)=>{const sc=s.tot<0?'sg':s.tot>0?'sb':'';
-    const sv=s.m>0?(s.tot>0?'+'+s.tot:s.tot===0?'E':s.tot):'-';
-    const me=loadMe()&&s.n.toLowerCase().includes(loadMe().toLowerCase())?'me':'';
-    h+=`<tr class="${me}"><td class="rc ${i<3?'r'+(i+1):''}">${i+1}</td><td class="nc">${s.n}</td>
-      <td class="${sc}" style="font-weight:600">${sv}</td>
-      <td style="font-size:.6rem">${s.gd.map(g=>{const gc=g.s!=null?(g.s<0?'t10':''):'';const cs=g.cut?'cut':'';return'<span class="er-g '+gc+' '+cs+'">'+g.n+(g.s!=null?' ('+(g.s>0?'+':'')+g.s+')':'')+'</span>';}).join(' ')}</td>
-      <td>${s.m}/${s.cnt}</td></tr>`;});
+  const raw=DG.lb.data||DG.lb.live_stats||[];
+  const sm={};for(const p of raw){const n=normN(p.player_name);
+    sm[n]={s:p.current_score??p.total??null,pos:p.current_pos??p.position??'-',thru:p.thru||p.end_hole||'-',cut:p.make_cut===0};}
+  const ev=POOL.activeEvent||document.getElementById('pi-ev')?.value||'masters';
+  const standings=POOL.entries.filter(e=>e.rosters[ev]&&e.rosters[ev].length>0).map(entry=>{
+    // Cumulative from completed events
+    let cumTotal=0,cumEvts=0;
+    for(const ck of POOL.completedEvents){if(entry.completed[ck]){cumTotal+=entry.completed[ck];cumEvts++;}}
+    // Live event score (best 4 of 6)
+    const live=calcEntryScore(entry,ev,sm);
+    if(live&&live.countedN>0){cumTotal+=live.total;cumEvts++;}
+    return{name:entry.name,cumTotal,cumEvts,liveScore:live?live.total:null,golfers:live?live.golfers:[],countedN:live?live.countedN:0};
+  }).sort((a,b)=>a.cumTotal-b.cumTotal);
+  const ml=Math.ceil(standings.length*.33);
+  let h=`<div style="font-size:.6rem;color:var(--td);margin-bottom:.3rem">Event: ${EV_NAMES[ev]||ev} · Best ${BEST_OF} of ${ROSTER_SZ} · ${standings.length} entries · Money line: top ${ml}</div>`;
+  h+='<div class="tw" style="margin:0"><table><thead><tr><th>Rk</th><th>Entry</th><th>Score</th><th>Golfers (best 4 highlighted, worst 2 dropped)</th></tr></thead><tbody>';
+  standings.forEach((s,i)=>{
+    const sc=s.cumTotal<0?'sg':s.cumTotal>0?'sb':'';
+    const sv=s.countedN>0?(s.cumTotal>0?'+'+s.cumTotal:s.cumTotal===0?'E':s.cumTotal):'-';
+    const me=loadMe()&&s.name.toLowerCase().includes(loadMe().toLowerCase())?'me':'';
+    const rw=[i<3?'t3':'',i<ml?'im':'',i===ml-1?'ml-row':'',me].filter(Boolean).join(' ');
+    const gTags=s.golfers.map(g=>{
+      const cls=g.counted?'er-g counted':(g.score!==null?'er-g dropped':'er-g');
+      const sc2=g.score!=null?' ('+(g.score>0?'+':'')+g.score+')':'';
+      return`<span class="${cls}${g.cut?' cut':''}">${g.name}${sc2}</span>`;}).join(' ');
+    h+=`<tr class="${rw}"><td class="rc ${i<3?'r'+(i+1):''}">${i+1}</td><td class="nc">${s.name}</td>
+      <td class="${sc}" style="font-weight:600">${sv}</td><td style="font-size:.58rem">${gTags}</td></tr>`;});
   h+='</tbody></table></div>';document.getElementById('pl-bd').innerHTML=h;}
-/* Majors schedule */
+
+/* === ACTIVE EVENT DETECTION === */
+function detectEvent(name){
+  if(!name)return;
+  for(const[key,rx]of Object.entries(EV_DETECT)){if(rx.test(name)){POOL.activeEvent=key;savePool();return;}}
+}
+
+/* === MAJORS SCHEDULE === */
 function rMjrSch(){
   const el=document.getElementById('mjr-sch');if(!el)return;
-  const mj=[{n:'The Players',d:'Mar 13 \'25',s:'done'},{n:'Masters',d:'Apr 10 \'25',s:'done'},
-    {n:'PGA Champ.',d:'May 15 \'25',s:'done'},{n:'U.S. Open',d:'Jun 12 \'25',s:'done'},
-    {n:'The Open',d:'Jul 17 \'25',s:'done'},{n:'Masters \'26',d:'Apr 2026',s:'next'},
-    {n:'PGA Champ. \'26',d:'May 2026',s:'next'},{n:'U.S. Open \'26',d:'Jun 2026',s:'next'},
-    {n:'The Open \'26',d:'Jul 2026',s:'next'}];
-  el.innerHTML=mj.map(m=>{const c=m.s==='done'?'done':m.s==='live'?'live':'next';
+  const mj=EK.map(k=>{
+    let s='next';if(POOL.completedEvents.includes(k))s='done';
+    else if(POOL.activeEvent===k)s='live';
+    return{n:EV_NAMES[k],d:EV_DATES[k],s,k};});
+  el.innerHTML=mj.map(m=>{const c=m.s;
     const sl=m.s==='done'?'Complete':m.s==='live'?'LIVE':'Upcoming';
     const sc=m.s==='done'?'s-d':m.s==='live'?'s-l':'s-n';
-    return`<div class="mjr-card ${c}"><div class="mn">${m.n}</div><div class="md">${m.d}</div><div class="ms ${sc}">${sl}</div></div>`;}).join('');}
-/* Live tab init */
+    const cnt=POOL.entries.filter(e=>e.rosters[m.k]&&e.rosters[m.k].length>0).length;
+    return`<div class="mjr-card ${c}"><div class="mn">${m.n}</div><div class="md">${m.d}</div><div class="ms ${sc}">${sl}</div>`+
+      (cnt?`<div style="font-size:.55rem;color:var(--td);margin-top:.15rem">${cnt} entries</div>`:'')+`</div>`;}).join('');}
+
+/* === NOTIFICATIONS === */
+async function initNtf(){
+  if(!('Notification' in window)){document.getElementById('ntf-perm').innerHTML='<span style="font-size:.62rem;color:var(--td)">Notifications not supported in this browser</span>';return;}
+  const saved=localStorage.getItem('ntf_prefs');if(saved)try{Object.assign(NTF.types,JSON.parse(saved));}catch(e){}
+  if(Notification.permission==='granted')NTF.enabled=true;
+  else if(Notification.permission==='default'){
+    document.getElementById('ntf-perm').innerHTML='<button class="ab" onclick="reqNtfPerm()">Enable Notifications</button>';}
+  rNtfToggles();rNtfHist();}
+async function reqNtfPerm(){
+  const r=await Notification.requestPermission();NTF.enabled=r==='granted';
+  document.getElementById('ntf-perm').innerHTML=NTF.enabled?'<span class="dgs ok">✓ Notifications enabled</span>':'<span class="dgs err">Notifications blocked</span>';rNtfToggles();}
+function rNtfToggles(){
+  const el=document.getElementById('ntf-toggles');
+  el.innerHTML=Object.entries(NTF_META).map(([k,v])=>`<label class="ntf-tog">
+    <input type="checkbox" ${NTF.types[k]?'checked':''} onchange="NTF.types['${k}']=this.checked;localStorage.setItem('ntf_prefs',JSON.stringify(NTF.types))">
+    <span class="nt-icon">${v.icon}</span><span class="nt-lbl">${v.lbl}</span></label>`).join('');}
+function rNtfHist(){
+  const el=document.getElementById('ntf-hist');if(!NTF.history.length){el.innerHTML='<div style="font-size:.6rem;color:var(--td);text-align:center;padding:.3rem">No notifications yet</div>';return;}
+  el.innerHTML=NTF.history.slice(0,20).map(n=>`<div class="ntf-item"><span class="ni-time">${new Date(n.ts).toLocaleTimeString()}</span><span class="ni-msg">${NTF_META[n.type]?.icon||''} ${n.msg}</span></div>`).join('');}
+function fireNtf(type,msg){
+  if(!NTF.enabled||!NTF.types[type])return;
+  try{new Notification('Golf Majors Pool',{body:msg,icon:'icon-192.png',tag:type+'-'+Date.now()});}catch(e){}
+  NTF.history.unshift({type,msg,ts:Date.now()});if(NTF.history.length>50)NTF.history.pop();rNtfHist();}
+function captureSnap(){
+  if(!DG.lb)return null;const raw=DG.lb.data||DG.lb.live_stats||[];
+  const gp={};for(const p of raw){gp[normN(p.player_name)]={score:p.current_score??p.total,pos:parseInt(p.current_pos||p.position)||999,thru:p.thru||p.end_hole||0,cut:p.make_cut===0};}
+  // Calc standings snap
+  const ev=POOL.activeEvent||'masters';const sm={};for(const p of raw){const n=normN(p.player_name);sm[n]={s:p.current_score??p.total??null,pos:p.current_pos??p.position??'-',thru:p.thru||p.end_hole||'-',cut:p.make_cut===0};}
+  const st=POOL.entries.filter(e=>e.rosters[ev]&&e.rosters[ev].length>0).map(entry=>{
+    const live=calcEntryScore(entry,ev,sm);return{name:entry.name,total:live?live.total:999};}).sort((a,b)=>a.total-b.total);
+  return{ts:Date.now(),standings:st,golfers:gp,leader:st[0]?.name};}
+function diffAndNotify(prev){
+  const curr=captureSnap();if(!curr||!prev)return;
+  const me=loadMe();if(!me)return;
+  const myPrev=prev.standings.find(s=>s.name.toLowerCase().includes(me.toLowerCase()));
+  const myCurr=curr.standings.find(s=>s.name.toLowerCase().includes(me.toLowerCase()));
+  if(myPrev&&myCurr){
+    const myPrevRk=prev.standings.indexOf(myPrev)+1,myCurrRk=curr.standings.indexOf(myCurr)+1;
+    const ml=Math.ceil(curr.standings.length*.33);
+    if(myCurrRk===1&&myPrevRk!==1)fireNtf('lead','Your entry moved into 1st place!');
+    if(myCurrRk<=ml&&myPrevRk>ml)fireNtf('inMoney',`You moved into the money (#${myCurrRk})!`);
+    if(myCurrRk>ml&&myPrevRk<=ml)fireNtf('outMoney',`You dropped out of the money (#${myCurrRk})`);
+    if(Math.abs(myCurrRk-myPrevRk)>=5)fireNtf('bigMove',`You moved ${Math.abs(myCurrRk-myPrevRk)} spots to #${myCurrRk}`);}
+  if(prev.leader!==curr.leader)fireNtf('leadChange',`New pool leader: ${curr.leader}`);
+  // Eagle detection: check my golfers
+  const ev=POOL.activeEvent||'masters';const myEntry=POOL.entries.find(e=>e.name?.toLowerCase().includes(me.toLowerCase()));
+  if(myEntry&&myEntry.rosters[ev]){
+    for(const g of myEntry.rosters[ev]){const n=normN(g);const pg=prev.golfers[n],cg=curr.golfers[n];
+      if(pg&&cg&&pg.score!=null&&cg.score!=null){
+        const drop=pg.score-cg.score;const holes=(cg.thru||0)-(pg.thru||0);
+        if(drop>=2&&holes>0&&holes<=2)fireNtf('eagle',`${g} may have eagled! (${drop>0?'-':''}${drop} in ${holes} hole${holes>1?'s':''})`);
+        if(cg.pos<=5&&pg.pos>5)fireNtf('top5',`${g} moved to T${cg.pos}!`);
+        if(cg.cut&&!pg.cut)fireNtf('missedCut',`${g} missed the cut`);
+        if(cg.thru===18&&pg.thru!==18)fireNtf('roundEnd',`${g} finished round: ${cg.score>0?'+':''}${cg.score}`);}}}
+}
+
+/* === LIVE TAB INIT === */
 function rLive(){
   const sk=localStorage.getItem('dg_key');
   if(sk){document.getElementById('dg-key').value=sk;if(!DG.ok)dgConn();}
-  const sp=localStorage.getItem('pool26');
-  if(sp){try{DG.pool=JSON.parse(sp);document.getElementById('pi-cnt').textContent=DG.pool.length+' entries loaded';rPE();}catch(e){}}
-  rMjrSch();}
+  loadPool();
+  if(POOL.entries.length){document.getElementById('pi-cnt').textContent=POOL.entries.length+' entries loaded';rPE();rEvStatus();}
+  rMjrSch();initNtf();}
 
 /* ===== SERVICE WORKER ===== */
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
